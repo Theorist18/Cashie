@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>3D Rotating Cashie Card</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" />
+  <style>
+    body {
+      background: #ffffff;
+      font-family: 'Segoe UI', sans-serif;
+      color: #003366;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      perspective: 1500px;
+      padding: 40px;
+      box-sizing: border-box;
+    }
+
+    .card-container {
+      width: 100%;
+      max-width: 1000px;
+      height: 480px;
+      position: relative;
+      perspective: 1500px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      border-radius: 16px;
+      transform-style: preserve-3d;
+      transition: transform 0.8s ease;
+      box-shadow: 0 0 14px rgba(0,0,0,0.1);
+      cursor: default;
+    }
+
+    .card.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .card-front,
+    .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 16px;
+      backface-visibility: hidden;
+      box-sizing: border-box;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .card-front {
+      background: linear-gradient(to bottom right, #e0f7ff, #ffffff);
+      border: 3px solid #00bfff;
+      display: flex;
+      flex-direction: row;
+      padding: 20px 30px;
+      gap: 30px;
+      color: #003366;
+    }
+
+    .column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .left {
+      text-align: center;
+      max-width: 240px;
+    }
+
+    .avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 4px solid #00bfff;
+      box-shadow: 0 0 8px rgba(0, 191, 255, 0.2);
+      margin-bottom: 14px;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    h2 {
+      font-size: 1.8em;
+      margin-bottom: 4px;
+    }
+
+    .title {
+      font-style: italic;
+      margin-bottom: 6px;
+      font-size: 1em;
+    }
+
+    .tag {
+      background: rgba(0, 191, 255, 0.1);
+      padding: 4px 10px;
+      margin: 2px;
+      border-radius: 6px;
+      font-size: 0.75em;
+      display: inline-block;
+    }
+
+    .section-title {
+      color: #00bfff;
+      font-weight: bold;
+      font-size: 1.1em;
+      margin: 12px 0;
+      width: 100%;
+      text-align: center;
+    }
+
+    .trait-box {
+      background: rgba(0, 191, 255, 0.05);
+      border-left: 4px solid #00bfff;
+      padding: 8px 12px;
+      margin-bottom: 8px;
+      border-radius: 6px;
+      font-size: 0.9em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #003366;
+      width: 100%;
+    }
+
+    .trait-box i {
+      min-width: 18px;
+      font-size: 1.1em;
+    }
+
+    .card-back {
+      background: linear-gradient(to bottom right, #e0f7ff, #ffffff);
+      border: 3px solid #00bfff;
+      color: #003366;
+      padding: 20px 30px;
+      display: flex;
+      flex-direction: column;
+      transform: rotateY(180deg);
+      overflow-y: auto;
+    }
+
+    button#rotateBtn {
+      padding: 12px 30px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 8px;
+      background-color: #00bfff;
+      color: #ffffff;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 191, 255, 0.3);
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+
+    button#rotateBtn:hover {
+      background-color: #0080c0;
+      color: #fff;
+    }
+
+    @media (max-width: 900px) {
+      .card-front {
+        flex-direction: column;
+        padding: 20px;
+      }
+      .left {
+        max-width: 100%;
+        margin-bottom: 20px;
+      }
+    }
+
+    .back-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: #00bfff;
+      border: none;
+      color: #fff;
+      padding: 10px 18px;
+      font-size: 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s ease, transform 0.2s ease;
+      z-index: 999;
+    }
+
+    .back-button:hover {
+      background: #0080c0;
+      transform: scale(1.05);
+    }
+
+    .back-button i {
+      margin-right: 6px;
+    }
+  </style>
+</head>
+<body>
+
+<button class="back-button" onclick="history.back()">
+  <i class="fas fa-arrow-left"></i> Back
+</button>
+
+<div class="card-container">
+  <div class="card" id="card">
+    <!-- Front Side -->
+    <div class="card-front">
+      <div class="column left">
+        <h2>Cashie</h2>
+        <div class="avatar">
+          <img src="https://github.com/user-attachments/assets/6d707084-e724-4368-b834-c8ad799661a1" alt="Cashie's Avatar" />
+        </div>
+        <div class="title">The Idealistic Dreamer</div>
+        <div class="tag">INFP – 9w1</div>
+        <div class="tag">Innerlight Healer</div>
+      </div>
+
+      <div class="column">
+        <div class="section-title">Skills</div>
+        <div class="trait-box"><i class="fas fa-heart"></i> Empath – Deeply feels the emotions of others.</div>
+        <div class="trait-box"><i class="fas fa-cloud"></i> Daydreamer – Escapes into inner worlds for peace.</div>
+        <div class="trait-box"><i class="fas fa-eye"></i> Soul Sense – Understands unspoken or hidden feelings.</div>
+        <div class="trait-box"><i class="fas fa-sun"></i> Steady Light – Remains composed and kind under pressure.</div>
+        <div class="trait-box"><i class="fas fa-compass"></i> Inner Truth – Guided by strong personal values.</div>
+        <div class="trait-box"><i class="fas fa-handshake"></i> Trustworthy – Reliable, honest, and dependable.</div>
+      </div>
+
+      <div class="column">
+        <div class="section-title">Weaknesses</div>
+        <div class="trait-box"><i class="fas fa-hand-peace"></i> Conflict Avoidant – Stays silent to maintain peace.</div>
+        <div class="trait-box"><i class="fas fa-water"></i> Emotion Drifter – Easily overwhelmed by shifting feelings.</div>
+        <div class="trait-box"><i class="fas fa-door-open"></i> Escapist – Retreats from reality instead of facing it.</div>
+        <div class="trait-box"><i class="fas fa-heart-crack"></i> Self-Blaming – Takes on guilt too easily.</div>
+        <div class="trait-box"><i class="fas fa-volume-mute"></i> Overwhelmed Easily – Struggles in loud or chaotic environments.</div>
+        <div class="trait-box"><i class="fas fa-user-slash"></i> Insecure – Wants to change but feels unable to.</div>
+      </div>
+    </div>
+
+    <!-- Back Side -->
+    <div class="card-back">
+      <div class="section-title">Coming Soon</div>
+      <p style="text-align:center;">Cashie's stats, abilities, and progress bars will be here soon!</p>
+    </div>
+  </div>
+</div>
+
+<button id="rotateBtn">Rotate Card</button>
+
+<script>
+  const card = document.getElementById('card');
+  const btn = document.getElementById('rotateBtn');
+  btn.addEventListener('click', () => {
+    card.classList.toggle('flipped');
+  });
+</script>
+
+</body>
+</html>
